@@ -14,16 +14,14 @@ RUN dpkg -i packages-microsoft-prod.deb
 RUN apt-get update
 RUN apt-get install --no-install-recommends --no-install-suggests -y \
     powershell lib32gcc-s1 curl ca-certificates locales supervisor zip
+    
 
 # Install wine, if necessary
-# WORKDIR /etc/apt/keyrings
-# RUN dpkg --add-architecture i386 
-# RUN wget -O /etc/apt/keyrings/winehq-archive.key https://dl.winehq.org/wine-builds/winehq.key
-# RUN wget -NP /etc/apt/sources.list.d/ https://dl.winehq.org/wine-builds/ubuntu/dists/jammy/winehq-jammy.sources
-# RUN apt-get update
-# RUN apt-get install --install-recommends -y winehq-stable winetricks screen xvfb
-# ENV WINEPREFIX="/tmp/.wine" \
-#     WINEARCH=win64
+RUN apt-get update
+RUN apt-get install --no-install-recommends -y \
+    sudo gnupg2 software-properties-common wine wine64
+ENV WINEPATH=/app/server/icarus \
+    WINEARCH=win64
 
 # Install SteamCMD
 WORKDIR /steam
@@ -44,6 +42,7 @@ WORKDIR /app
 RUN mkdir -p ./backups
 RUN mkdir -p ./server
 RUN mkdir -p ./logs
+RUN mkdir -p ./saves
 
 # Copy configs
 COPY ./configs/supervisord.conf /etc
@@ -58,9 +57,10 @@ COPY ./scripts/ .
 WORKDIR /tmp
 
 # Set up server defaults
-ENV STEAM_APPID="00000" \ 
-    SERVER_PROCESS_NAME="notepad" \ 
-    SERVER_PORT="1234" \ 
+ENV STEAM_APPID="2089300" \ 
+    SERVER_PROCESS_NAME="IcarusServer-Win64-Shipping" \ 
+    SERVER_PORT="17777" \ 
+    QUERY_PORT="27015" \
     SERVER_NAME="Default Server Name" \
     SERVER_PASSWORD="DefaultPassword" \
     TEMP_FOLDER="/tmp" \

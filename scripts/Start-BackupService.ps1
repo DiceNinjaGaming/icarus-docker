@@ -1,5 +1,5 @@
 $backupLocation = '/app/backups'
-$saveLocation = '/app/server'
+$saveLocation = '/app/saves'
 $backupsEnabled=$env:BACKUPS_ENABLED
 $backupsInterval=$env:BACKUPS_INTERVAL
 
