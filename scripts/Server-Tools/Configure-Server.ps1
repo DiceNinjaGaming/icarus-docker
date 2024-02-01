@@ -2,10 +2,16 @@ $configFolder = '/app/saves/Saved/Config/WindowsServer/'
 
 function Configure-Server
 {
+    if (-not (Test-Path $configFolder))
+    {
+        Write-Output "Config folder doesn't exist, creating it now"
+        New-Item $configFolder -ItemType Directory
+    }
   $engineIniFile = Join-Path $configFolder "Engine.ini"
   if (-Not (Test-Path $engineIniFile))
   {
     Write-Output "Engine.ini doesn't exist, creating it now"
+    New-Item $engineIniFile
     "[OnlineSubsystemSteam]" | Out-File $engineIniFile
     "AsyncTaskTimeout=$env:STEAM_ASYNC_TIMEOUT" | Out-File $engineIniFile -Append
   }

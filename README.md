@@ -1,5 +1,7 @@
-# baseimage
-A base image for game servers
+# Icarus Docker Dedicated Server
+A Docker image for running an Icarus game server.
+
+`THIS IS CURRENTLY WIP AND NOT READY FOR PRIMETIME USE`
 
 # IMPORTANT INFO FOR FORKS
 This section contains information related to creating forked repos for specific games. This section should be
