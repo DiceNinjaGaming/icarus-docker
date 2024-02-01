@@ -1,4 +1,4 @@
-FROM phusion/baseimage:jammy-1.0.1
+FROM ubuntu:22.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -15,18 +15,15 @@ RUN apt-get update
 RUN apt-get install --no-install-recommends --no-install-suggests -y \
     powershell lib32gcc-s1 curl ca-certificates locales supervisor zip
     
-
 # Install wine, if necessary
+RUN dpkg --add-architecture i386
 RUN apt-get update
 RUN apt-get install --no-install-recommends -y \
-    sudo gnupg2 software-properties-common wine wine64
-ENV WINEPATH=/app/server/icarus \
-    WINEARCH=win64
-
-# Install SteamCMD
-WORKDIR /steam
-RUN wget https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz \
-  && tar xvf steamcmd_linux.tar.gz
+    sudo gnupg2 software-properties-common wine wine32 wine64 xvfb
+ENV WINEPATH=/app/server \
+    WINEARCH=win64 \
+    WINEPREFIX=/app/wine \
+    DISPLAY=:0.0
 
 # Install mcRcon
 WORKDIR /mcrcon
@@ -43,12 +40,13 @@ RUN mkdir -p ./backups
 RUN mkdir -p ./server
 RUN mkdir -p ./logs
 RUN mkdir -p ./saves
+RUN mkdir -p ./wine
 
 # Copy configs
 COPY ./configs/supervisord.conf /etc
 # If the workdir changes, also update it in Config-Tools
 WORKDIR /app/configs
-COPY ./configs/game-configs/ .
+# COPY ./configs/game-configs/ .
 
 # Copy scripts
 WORKDIR /scripts
@@ -63,6 +61,7 @@ ENV STEAM_APPID="2089300" \
     QUERY_PORT="27015" \
     SERVER_NAME="Default Server Name" \
     SERVER_PASSWORD="DefaultPassword" \
+    ADMIN_PASSWORD="DefaultAdminPassword" \
     TEMP_FOLDER="/tmp" \
     TZ="Etc/UTC" \
     FILE_UMASK="022" \
@@ -75,7 +74,28 @@ ENV STEAM_APPID="2089300" \
     UPDATES_INTERVAL=15 \
     RCON_PORT=25575 \
     RCON_PASSWORD="ChangeThisPasswordIfUsingRCON" \
-    RCON_MAX_KARMA=60
+    RCON_MAX_KARMA=60 \
+    STEAM_ASYNC_TIMEOUT=60 \
+    MAX_PLAYERS=8 \
+    SHUTDOWN_IF_NOT_JOINED_FOR=0 \
+    SHUTDOWN_IF_EMPTY_FOR=300 \
+    ALLOW_NON_ADMINS_LAUNCH=True \
+    ALLOW_NON_ADMINS_DELETE=False \
+    RESUME_PROSPECT=True
+    # USER_ID=1000 \
+    # GROUP_ID=1000
+
+# Create Steam user
+# RUN groupadd -g "${GROUP_ID}" steam \
+#   && useradd --create-home --no-log-init -u "${USER_ID}" -g "${GROUP_ID}" steam
+# RUN chown -R "${USER_ID}":"${GROUP_ID}" /home/steam
+# RUN chown -R "${USER_ID}":"${GROUP_ID}" /app/server
+
+# Install SteamCMD
+WORKDIR /steam
+# RUN chown -R "${USER_ID}":"${GROUP_ID}" /steam
+RUN wget https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz \
+  && tar xvf steamcmd_linux.tar.gz
 
 # HEALTHCHECK CMD sv status ddns | grep run || exit 1
 

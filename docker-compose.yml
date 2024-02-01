@@ -1,0 +1,25 @@
+services:
+  icarus:
+    container_name: icarus
+    image: diceninjagaming/icarus-docker:latest
+    restart: "unless-stopped"
+    network_mode: bridge
+    ports:
+      - 17777:17777/udp
+      - 27000:27040/udp
+    volumes:
+      - /docker_volumes/icarus_logs:/app/logs
+      - /docker_volumes/icarus_saves:/app/saves
+      - /docker_volumes/icarus_server:/app/server
+    environment:
+      - SERVER_NAME=DNG Testing
+      - SERVER_PASSWORD=DefaultPassword
+      - ADMIN_PASSWORD=SecretAdminPassword
+      - SERVER_PORT=17777
+      - QUERY_PORT=27015
+      - TZ=America/New_York
+      - USER_ID=1
+      - GROUP_ID=1
+      # - STEAM_ASYNC_TIMEOUT=60
+      # - SHUTDOWN_NOT_JOINED_FOR=0
+      # - SHUTDOWN_EMPTY_FOR=60

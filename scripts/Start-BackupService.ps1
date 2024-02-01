@@ -1,7 +1,7 @@
 $backupLocation = '/app/backups'
 $saveLocation = '/app/saves'
 $backupsEnabled=$env:BACKUPS_ENABLED
-$backupsInterval=$env:BACKUPS_INTERVAL
+[int]$backupsInterval=$env:BACKUPS_INTERVAL
 
 function RunBackups()
 {

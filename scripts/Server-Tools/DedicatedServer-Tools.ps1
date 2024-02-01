@@ -4,6 +4,7 @@ Tools related to the running server
 #>
 
 [string]$serverProcessName=$env:SERVER_PROCESS_NAME
+$_runServer=$true
 
 function ServerRunning
 {
@@ -19,7 +20,13 @@ function KillServer
   }
 }
 
+function StopServer
+{
+  $_runServer=$false
+  KillServer
+}
+
 function RunServer
 {
-  return $true
+  return $_runServer
 }
